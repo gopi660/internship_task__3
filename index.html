@@ -1,0 +1,3313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="An interactive, fully responsive lesson workbook explaining how the internet works from your phone to a server and back. Built with semantic HTML, vanilla CSS, and JavaScript.">
+  <title>How Does the Internet Work? | Interactive Tech Workbook</title>
+
+  <style>
+
+    :root {
+      color-scheme: light;
+
+      --bg-canvas: #ffffff;
+      --bg-surface: #ffffff;
+      --bg-surface-raised: #f8fafc;
+      --bg-surface-muted: #f1f5f9;
+      --bg-interactive: #f1f5f9;
+      --bg-interactive-hover: #e2e8f0;
+
+      --border-subtle: #d1d5db;
+      --border-medium: #9ca3af;
+      --border-focus: #374151;
+
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-faint: #64748b;
+      --text-inverse: #ffffff;
+
+      --electric-blue: #4b5563;
+      --electric-blue-soft: #f3f4f6;
+      --brand-blue: #4b5563;
+      --brand-blue-soft: #f3f4f6;
+      --brand-emerald: #059669;
+      --brand-emerald-soft: #ecfdf5;
+      --brand-amber: #d97706;
+      --brand-amber-soft: #fef3c7;
+      --brand-rose: #e11d48;
+      --brand-rose-soft: #fff1f2;
+
+      --font-ui: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+
+      --shadow-subtle: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.08);
+
+      --container-max-width: 1320px;
+      --container-gutter: 48px;
+      --header-height: 64px;
+      --touch-target: 44px;
+      --transition-fast: 150ms ease;
+      --transition-base: 220ms ease;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      color-scheme: light;
+      scroll-behavior: smooth;
+      font-family: var(--font-ui);
+      background-color: #ffffff;
+      color: var(--text-main);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;
+      overflow-x: hidden;
+      width: 100%;
+    }
+
+    body {
+      color-scheme: light;
+      background-color: #ffffff;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      width: 100%;
+      position: relative;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -60px;
+      left: 16px;
+      background: #4b5563;
+      color: var(--text-inverse);
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.9rem;
+      z-index: 9999;
+      text-decoration: none;
+      transition: top var(--transition-fast);
+    }
+    .skip-link:focus {
+      top: 16px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--border-focus);
+      outline-offset: 3px;
+    }
+
+    h1, h2, h3, h4 {
+      line-height: 1.25;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      overflow-wrap: break-word;
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      overflow-wrap: break-word;
+    }
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    code {
+      font-family: var(--font-code);
+      font-size: 0.88em;
+      background: var(--bg-surface-raised);
+      border: 1px solid var(--border-subtle);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      color: var(--brand-blue);
+      word-break: break-all;
+    }
+
+    img, svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .title-highlight {
+      color: inherit;
+    }
+
+    .site-nav-header {
+      position: sticky;
+      top: 0;
+      z-index: 500;
+      background: #f3f4f6;
+      border-bottom: 2px solid var(--border-medium);
+      transition: background-color var(--transition-base);
+      width: 100%;
+    }
+
+    .nav-container {
+      width: min(var(--container-max-width), calc(100% - var(--container-gutter)));
+      margin-inline: auto;
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: relative;
+    }
+
+    .nav-logo-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #000000;
+      min-height: var(--touch-target);
+    }
+
+    .nav-logo-glyph {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-sm);
+      background: #ffffff;
+      border: 1.5px solid #4b5563;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .nav-logo-text {
+      font-size: clamp(0.96rem, 2.2vw, 1.08rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #000000;
+      white-space: nowrap;
+    }
+
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      gap: 6px;
+    }
+
+    .nav-tabs a {
+      color: #374151;
+      text-decoration: none;
+      font-size: 0.94rem;
+      font-weight: 700;
+      padding: 8px 15px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid transparent;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+    }
+
+    .nav-tabs a:hover {
+      color: #000000;
+      background: #e5e7eb;
+      border-color: var(--border-subtle);
+    }
+
+    .nav-tabs a.active {
+      color: #000000;
+      background: #ffffff;
+      font-weight: 800;
+      border: 1.5px solid var(--border-medium);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mobile-nav-toggle {
+      width: var(--touch-target);
+      height: var(--touch-target);
+      min-width: var(--touch-target);
+      min-height: var(--touch-target);
+      border-radius: var(--radius-sm);
+      background: #ffffff;
+      border: 1.5px solid var(--border-medium);
+      color: #374151;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .mobile-nav-toggle:hover {
+      color: var(--text-main);
+      border-color: var(--border-medium);
+      background: var(--bg-interactive-hover);
+    }
+
+    .nav-progress-track {
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: transparent;
+    }
+
+    .nav-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--brand-blue);
+      transition: width 100ms linear;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+    }
+
+    .container {
+      width: min(var(--container-max-width), calc(100% - var(--container-gutter)));
+      margin-inline: auto;
+    }
+
+    .lesson-section {
+      width: min(var(--container-max-width), calc(100% - var(--container-gutter)));
+      margin-inline: auto;
+      padding-block: clamp(52px, 7vw, 84px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .lesson-section:last-of-type {
+      border-bottom: none;
+    }
+
+    @media (max-width: 640px) {
+      .container,
+      .lesson-section,
+      .nav-container,
+      .footer-inner {
+        width: min(var(--container-max-width), calc(100% - 36px));
+      }
+    }
+
+    @media (max-width: 360px) {
+      .container,
+      .lesson-section,
+      .nav-container,
+      .footer-inner {
+        width: min(var(--container-max-width), calc(100% - 32px));
+      }
+    }
+
+    .section-intro-block {
+      margin-bottom: clamp(24px, 4vw, 36px);
+      max-width: 780px;
+    }
+
+    .section-step-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #4b5563;
+      margin-bottom: 8px;
+    }
+
+    .section-heading {
+      font-size: clamp(1.6rem, 3.8vw, 2.35rem);
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .section-description {
+      font-size: clamp(0.96rem, 1.8vw, 1.08rem);
+      color: var(--text-muted);
+      max-width: 740px;
+      line-height: 1.6;
+    }
+
+    .edu-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 22px;
+      min-height: var(--touch-target);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-ui);
+      font-size: 0.92rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .edu-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none !important;
+      pointer-events: none;
+    }
+
+    .edu-btn-primary {
+      background: #4b5563;
+      color: #ffffff;
+      border: 1.5px solid #1f2937;
+    }
+
+    .edu-btn-primary:hover:not(:disabled) {
+      background: #374151;
+      border-color: #111827;
+      transform: translateY(-1px);
+    }
+
+    .edu-btn-primary:active:not(:disabled) {
+      background: #1f2937;
+      transform: translateY(0);
+    }
+
+    .edu-btn-secondary {
+      background: #f3f4f6;
+      color: #111827;
+      border: 1.5px solid var(--border-medium);
+    }
+
+    .edu-btn-secondary:hover:not(:disabled) {
+      background: #e5e7eb;
+      border-color: #4b5563;
+    }
+
+    .edu-btn-secondary:active:not(:disabled) {
+      background: #d1d5db;
+    }
+
+    .edu-btn-sm {
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      min-height: 38px;
+    }
+
+    .hero-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+      gap: clamp(32px, 4.5vw, 64px);
+      align-items: center;
+      padding-top: clamp(12px, 3vw, 28px);
+      padding-bottom: clamp(12px, 3vw, 28px);
+    }
+
+    .hero-text-col {
+      max-width: 640px;
+    }
+
+    .hero-kicker {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #4b5563;
+      margin-bottom: 10px;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 4.2vw, 3rem);
+      line-height: 1.18;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+      color: #000000;
+      font-weight: 800;
+    }
+
+    .hero-tagline {
+      font-size: clamp(1.05rem, 2vw, 1.2rem);
+      color: var(--text-main);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .hero-lead {
+      font-size: clamp(0.95rem, 1.6vw, 1.02rem);
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .hero-action-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .hero-schematic-card {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      padding: clamp(18px, 3vw, 26px);
+      box-shadow: var(--shadow-card);
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+      margin-inline: auto;
+    }
+
+    .schematic-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1.5px solid var(--border-subtle);
+    }
+
+    .schematic-caption {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .schematic-canvas-wrap {
+      width: 100%;
+      background: var(--bg-canvas);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: clamp(20px, 3.5vw, 32px) clamp(12px, 2.5vw, 24px);
+      min-height: 145px;
+    }
+
+    .schematic-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      z-index: 2;
+      flex-shrink: 0;
+      width: clamp(60px, 14vw, 84px);
+    }
+
+    .node-box {
+      width: clamp(44px, 10vw, 56px);
+      height: clamp(44px, 10vw, 56px);
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface-raised);
+      border: 1.5px solid var(--border-medium);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      position: relative;
+      transition: all var(--transition-fast);
+    }
+
+    .node-box.active-pulse {
+      border-color: var(--brand-blue);
+      outline: 2px solid var(--brand-blue);
+      outline-offset: 2px;
+    }
+
+    .node-subtext {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .schematic-wire {
+      flex: 1;
+      height: 2px;
+      background: var(--border-subtle);
+      position: relative;
+      margin: 0 clamp(6px, 2vw, 14px);
+      margin-bottom: 24px;
+      min-width: 60px;
+    }
+
+    .schematic-cloud-hub {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-full);
+      padding: 4px clamp(8px, 1.8vw, 14px);
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--text-faint);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .flying-packet {
+      position: absolute;
+      top: -11px;
+      left: 0%;
+      width: 22px;
+      height: 22px;
+      border-radius: var(--radius-sm);
+      background: var(--brand-blue);
+      color: var(--text-inverse);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      font-family: var(--font-code);
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
+      transition: left 800ms cubic-bezier(0.4, 0, 0.2, 1), background-color 200ms ease;
+      z-index: 5;
+    }
+
+    .schematic-telemetry {
+      margin-top: 14px;
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-family: var(--font-code);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .telemetry-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .telemetry-indicator {
+      display: none;
+    }
+
+    .callout-summary {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-left: 5px solid #4b5563;
+      border-radius: var(--radius-sm);
+      padding: clamp(18px, 3vw, 24px);
+      margin-bottom: clamp(24px, 4vw, 36px);
+      width: 100%;
+      box-shadow: var(--shadow-card);
+    }
+
+    .callout-summary h3 {
+      font-size: clamp(1.1rem, 2.2vw, 1.25rem);
+      color: #111827;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .callout-summary p {
+      font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+      color: var(--text-muted);
+      line-height: 1.58;
+    }
+
+    .big-idea-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(14px, 2vw, 22px);
+      width: 100%;
+    }
+
+    .concept-card {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      padding: clamp(18px, 2.5vw, 24px);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: var(--shadow-card);
+    }
+
+    .concept-card:hover {
+      border-color: #374151;
+    }
+
+    .concept-header-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .concept-glyph {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: #f3f4f6;
+      border: 1.5px solid var(--border-medium);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4b5563;
+      flex-shrink: 0;
+    }
+
+    .concept-card h4 {
+      font-size: 1.08rem;
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .concept-card p {
+      font-size: 0.92rem;
+      line-height: 1.52;
+      margin-bottom: 16px;
+    }
+
+    .concept-analogy-box {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1.5px solid var(--border-subtle);
+      font-size: 0.84rem;
+      color: var(--text-faint);
+      line-height: 1.45;
+    }
+
+    .concept-photo-box {
+      margin: 12px 0 14px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1.5px solid var(--border-medium);
+      background: var(--bg-surface-raised);
+    }
+
+    .concept-photo {
+      width: 100%;
+      height: 135px;
+      object-fit: cover;
+      display: block;
+      background: #f1f5f9;
+      transition: transform var(--transition-fast);
+    }
+
+    .concept-card:hover .concept-photo {
+      transform: scale(1.02);
+    }
+
+    .concept-photo-caption {
+      padding: 6px 10px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .infrastructure-spotlight {
+      margin-top: 28px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      padding: clamp(18px, 3vw, 24px);
+    }
+
+    .infrastructure-badge {
+      display: inline-block;
+      font-size: 0.76rem;
+      font-weight: 700;
+      font-family: var(--font-code);
+      color: #374151;
+      background: #f3f4f6;
+      border: 1.5px solid var(--border-medium);
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      margin-bottom: 14px;
+      letter-spacing: 0.04em;
+    }
+
+    .infrastructure-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .infrastructure-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .infra-card {
+      display: flex;
+      flex-direction: column;
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .infra-img-frame {
+      width: 100%;
+      height: 180px;
+      background: #f8fafc;
+      border-bottom: 1.5px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .infra-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .infra-img-contain {
+      object-fit: contain;
+      padding: 12px;
+    }
+
+    .infra-info {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .infra-info h4 {
+      font-size: 0.95rem;
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .infra-info p {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .infra-tag {
+      margin-top: auto;
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      font-style: italic;
+    }
+
+    .journey-module {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      padding: clamp(20px, 3.5vw, 32px);
+      width: 100%;
+      box-shadow: var(--shadow-card);
+    }
+
+    .journey-phase-legend {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-faint);
+      padding: 10px 16px;
+      background: var(--bg-surface-raised);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      flex-wrap: wrap;
+    }
+
+    .phase-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .phase-tag-outbound { color: #4b5563; }
+    .phase-tag-inbound { color: #4b5563; }
+
+    .journey-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: clamp(8px, 1.5vw, 14px);
+      margin-bottom: 24px;
+      width: 100%;
+    }
+
+    .journey-step-btn {
+      background: var(--bg-surface-raised);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: clamp(12px, 2vw, 16px) 8px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+      min-height: 56px;
+    }
+
+    .journey-step-btn:hover {
+      border-color: #374151;
+      background: var(--bg-interactive-hover);
+    }
+
+    .journey-step-btn.active {
+      border: 2px solid #111827;
+      background: #e5e7eb;
+    }
+
+    .step-badge {
+      font-size: 0.74rem;
+      font-weight: 700;
+      font-family: var(--font-code);
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      border: 1.5px solid var(--border-medium);
+    }
+
+    .journey-step-btn.active .step-badge {
+      background: #111827;
+      color: var(--text-inverse);
+      border-color: #111827;
+    }
+
+    .step-title {
+      font-size: clamp(0.76rem, 1.5vw, 0.85rem);
+      font-weight: 700;
+      color: var(--text-main);
+      overflow-wrap: break-word;
+    }
+
+    .journey-stage-detail {
+      background: var(--bg-surface-raised);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: clamp(18px, 3vw, 26px);
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 22px;
+      min-height: 110px;
+    }
+
+    .stage-icon-holder {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      background: #f3f4f6;
+      border: 1.5px solid var(--border-medium);
+      color: #4b5563;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stage-text-wrap {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .stage-meta-kicker {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #4b5563;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .stage-heading {
+      font-size: clamp(1.1rem, 2.2vw, 1.25rem);
+      color: #111827;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .stage-explanation {
+      font-size: 0.94rem;
+      color: var(--text-muted);
+      line-height: 1.58;
+    }
+
+    .journey-nav-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .youtube-interactive-box {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: clamp(24px, 3.5vw, 44px);
+      align-items: start;
+      width: 100%;
+    }
+
+    .browser-canvas {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      width: 100%;
+    }
+
+    .browser-header-bar {
+      background: var(--bg-surface-raised);
+      border-bottom: 1.5px solid var(--border-medium);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .w-dot { width: 10px; height: 10px; border-radius: 50%; background: #d1d5db; }
+
+    .browser-url-input {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-family: var(--font-code);
+      font-size: 0.82rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .browser-viewport {
+      padding: clamp(20px, 3.5vw, 32px);
+      min-height: 240px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .browser-screen-content {
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .video-mockup-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: var(--bg-surface-raised);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .video-play-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #dc2626;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .yt-timeline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .yt-step-item {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: all var(--transition-fast);
+      min-height: 52px;
+    }
+
+    .yt-step-item:hover {
+      border-color: #374151;
+      background: var(--bg-surface-raised);
+    }
+
+    .yt-step-item.active {
+      border: 2px solid #111827;
+      background: #f3f4f6;
+    }
+
+    .yt-num {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface-raised);
+      border: 1.5px solid var(--border-medium);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: var(--font-code);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .yt-step-item.active .yt-num {
+      background: #111827;
+      color: var(--text-inverse);
+      border-color: #111827;
+    }
+
+    .yt-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .yt-content h4 {
+      font-size: 0.95rem;
+      color: #111827;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .yt-content p {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    .code-demo-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+      gap: clamp(20px, 3vw, 36px);
+      width: 100%;
+    }
+
+    .code-window {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      font-family: var(--font-code);
+      width: 100%;
+      box-shadow: var(--shadow-card);
+    }
+
+    .code-window-bar {
+      background: var(--bg-surface-raised);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1.5px solid var(--border-medium);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #4b5563;
+    }
+
+    .code-editor-area {
+      padding: 20px;
+      font-size: clamp(0.88rem, 1.8vw, 0.96rem);
+      line-height: 1.8;
+      color: var(--text-main);
+      overflow-x: auto;
+      background: var(--bg-surface);
+    }
+
+    .tok-kw { color: #374151; font-weight: 700; }
+    .tok-var { color: var(--text-main); font-weight: 600; }
+    .tok-str { color: #374151; font-weight: 600; }
+    .tok-fn { color: #4b5563; font-weight: 600; }
+
+    .code-site-select {
+      background: var(--bg-surface-raised);
+      border: 1.5px solid var(--border-medium);
+      color: var(--text-main);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-code);
+      font-size: 0.88rem;
+      min-height: 32px;
+      cursor: pointer;
+    }
+
+    .code-line-explanations {
+      padding: 16px 20px;
+      background: var(--bg-surface-raised);
+      border-top: 1.5px solid var(--border-subtle);
+      font-family: var(--font-ui);
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .code-action-strip {
+      padding: 14px 20px;
+      background: var(--bg-surface);
+      border-top: 1.5px solid var(--border-medium);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .console-window {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      font-family: var(--font-code);
+      width: 100%;
+      box-shadow: var(--shadow-card);
+    }
+
+    .console-logs-area {
+      padding: 20px;
+      flex: 1;
+      min-height: 200px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      word-break: break-word;
+      background: var(--bg-surface);
+    }
+
+    .console-output-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 12px;
+      background: var(--bg-surface-raised);
+      border-left: 3.5px solid var(--brand-blue);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    .console-output-text {
+      color: #374151;
+      font-weight: 600;
+      word-break: break-word;
+    }
+
+    .activity-wrapper {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      padding: clamp(20px, 4vw, 36px);
+      width: 100%;
+      max-width: 960px;
+      margin-inline: auto;
+      box-shadow: var(--shadow-card);
+    }
+
+    .activity-instructions-text {
+      margin-bottom: 20px;
+      font-size: clamp(0.92rem, 1.8vw, 0.98rem);
+      color: var(--text-muted);
+    }
+
+    .activity-alert {
+      display: none;
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+      margin-bottom: 20px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .activity-alert.success {
+      display: flex;
+      background: var(--brand-emerald-soft);
+      border: 1.5px solid var(--brand-emerald);
+      color: var(--brand-emerald);
+    }
+
+    .activity-alert.error {
+      display: flex;
+      background: var(--brand-rose-soft);
+      border: 1.5px solid var(--brand-rose);
+      color: var(--brand-rose);
+    }
+
+    .sortable-cards-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+
+    .sortable-card-item {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: grab;
+      user-select: none;
+      transition: all var(--transition-fast);
+      min-height: 56px;
+      width: 100%;
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .sortable-card-item:active {
+      cursor: grabbing;
+    }
+
+    .sortable-card-item.is-dragging {
+      opacity: 0.4;
+      border-color: #111827;
+    }
+
+    .sortable-card-item.correct-pos {
+      border-color: var(--brand-emerald);
+      background: var(--brand-emerald-soft);
+    }
+
+    .sortable-card-item.wrong-pos {
+      border-color: var(--brand-rose);
+      background: var(--brand-rose-soft);
+    }
+
+    .slot-num-badge {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      color: var(--text-main);
+      font-size: 0.84rem;
+      font-family: var(--font-code);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-label-text {
+      flex: 1;
+      font-size: clamp(0.9rem, 1.8vw, 0.98rem);
+      font-weight: 600;
+      color: var(--text-main);
+      overflow-wrap: break-word;
+      min-width: 0;
+    }
+
+    .card-reorder-buttons {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .btn-shift {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      background: #f3f4f6;
+      border: 1.5px solid var(--border-medium);
+      color: #374151;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-shift:hover:not(:disabled) {
+      background: #e5e7eb;
+      color: #111827;
+      border-color: #9ca3af;
+    }
+
+    .btn-shift:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .activity-button-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .quiz-frame {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      padding: clamp(24px, 4vw, 36px);
+      width: 100%;
+      max-width: 920px;
+      margin-inline: auto;
+      box-shadow: var(--shadow-card);
+    }
+
+    .quiz-status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1.5px solid var(--border-medium);
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-faint);
+    }
+
+    .quiz-question-prompt {
+      font-size: clamp(1.18rem, 2.5vw, 1.35rem);
+      color: var(--text-main);
+      margin-bottom: 24px;
+      line-height: 1.42;
+    }
+
+    .quiz-choices-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+
+    .quiz-choice-btn {
+      width: 100%;
+      text-align: left;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      font-family: var(--font-ui);
+      transition: all var(--transition-fast);
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .quiz-choice-btn:hover:not(:disabled) {
+      border-color: #111827;
+      background: var(--bg-surface-raised);
+    }
+
+    .choice-key {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      color: var(--text-muted);
+      font-weight: 800;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .choice-text {
+      flex: 1;
+      font-size: clamp(0.9rem, 1.8vw, 0.98rem);
+      color: var(--text-main);
+      overflow-wrap: break-word;
+      min-width: 0;
+    }
+
+    .quiz-choice-btn.is-correct {
+      background: var(--brand-emerald-soft);
+      border-color: var(--brand-emerald);
+    }
+    .quiz-choice-btn.is-correct .choice-key {
+      background: var(--brand-emerald);
+      color: #ffffff;
+      border-color: var(--brand-emerald);
+    }
+
+    .quiz-choice-btn.is-wrong {
+      background: var(--brand-rose-soft);
+      border-color: var(--brand-rose);
+    }
+    .quiz-choice-btn.is-wrong .choice-key {
+      background: var(--brand-rose);
+      color: #ffffff;
+      border-color: var(--brand-rose);
+    }
+
+    .quiz-feedback-banner {
+      display: none;
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+      line-height: 1.55;
+      margin-bottom: 24px;
+    }
+
+    .quiz-feedback-banner.feedback-correct {
+      display: block;
+      background: var(--brand-emerald-soft);
+      border: 1.5px solid var(--brand-emerald);
+      color: var(--text-main);
+    }
+
+    .quiz-feedback-banner.feedback-wrong {
+      display: block;
+      background: var(--brand-rose-soft);
+      border: 1.5px solid var(--brand-rose);
+      color: var(--text-main);
+    }
+
+    .quiz-footer-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .completion-card {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      padding: clamp(28px, 5vw, 48px) clamp(18px, 4vw, 36px);
+      text-align: center;
+      width: 100%;
+      max-width: 960px;
+      margin-inline: auto;
+      box-shadow: var(--shadow-card);
+    }
+
+    .completion-celebration-glyph {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-sm);
+      background: #f3f4f6;
+      border: 2px solid #4b5563;
+      color: #4b5563;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+    }
+
+    .completion-title {
+      font-size: clamp(1.7rem, 3.8vw, 2.35rem);
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+
+    .completion-text {
+      font-size: clamp(0.96rem, 1.8vw, 1.08rem);
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto 28px;
+      line-height: 1.62;
+    }
+
+    .results-metrics-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+
+    .metric-panel {
+      background: var(--bg-surface-raised);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: 16px 12px;
+    }
+
+    .metric-fig {
+      font-size: clamp(1.25rem, 3vw, 1.55rem);
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 2px;
+    }
+
+    .metric-tag {
+      font-size: 0.74rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-faint);
+    }
+
+    .key-recap-box {
+      background: var(--bg-surface-raised);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      text-align: left;
+      margin-bottom: 28px;
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+
+    .key-recap-box h4 {
+      font-size: 0.98rem;
+      color: #111827;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .recap-points {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .recap-points li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .recap-points li svg {
+      color: #4b5563;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .site-footer {
+      border-top: 2px solid var(--border-medium);
+      background: var(--bg-surface);
+      padding-block: 28px;
+      font-size: 0.85rem;
+      color: var(--text-faint);
+      width: 100%;
+    }
+
+    .footer-inner {
+      width: min(var(--container-max-width), calc(100% - var(--container-gutter)));
+      margin-inline: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 960px) {
+      .hero-layout {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .youtube-interactive-box {
+        grid-template-columns: 1fr;
+      }
+      .code-demo-grid {
+        grid-template-columns: 1fr;
+      }
+      .big-idea-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .journey-strip {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-tabs {
+        display: none;
+        position: absolute;
+        top: var(--header-height);
+        left: 0;
+        right: 0;
+        background: #f3f4f6;
+        border-bottom: 2px solid var(--border-medium);
+        flex-direction: column;
+        padding: 14px clamp(16px, 4vw, 24px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        gap: 6px;
+      }
+      .nav-tabs.open {
+        display: flex;
+      }
+      .nav-tabs a {
+        width: 100%;
+        min-height: var(--touch-target);
+        padding: 10px 14px;
+        font-size: 0.95rem;
+      }
+      .mobile-nav-toggle {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .big-idea-grid {
+        grid-template-columns: 1fr;
+      }
+      .journey-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .journey-phase-legend {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .journey-stage-detail {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .results-metrics-strip {
+        grid-template-columns: 1fr;
+      }
+      .activity-button-bar {
+        flex-direction: column;
+      }
+      .activity-button-bar .edu-btn {
+        width: 100%;
+      }
+      .hero-action-row {
+        flex-direction: column;
+        width: 100%;
+      }
+      .hero-action-row .edu-btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .schematic-canvas-wrap {
+        padding: 14px 8px;
+      }
+      .schematic-wire {
+        min-width: 40px;
+        margin: 0 4px;
+        margin-bottom: 20px;
+      }
+      .schematic-cloud-hub {
+        padding: 2px 6px;
+        font-size: 0.65rem;
+      }
+      .node-box {
+        width: 40px;
+        height: 40px;
+      }
+      .schematic-telemetry {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .card-reorder-buttons {
+        gap: 3px;
+      }
+      .btn-shift {
+        width: 34px;
+        height: 34px;
+      }
+    }
+
+    @keyframes scrollFadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(32px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes scrollFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes scrollSlideLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-28px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes scrollSlideRight {
+      from {
+        opacity: 0;
+        transform: translateX(28px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes scrollScaleUp {
+      from {
+        opacity: 0;
+        transform: scale(0.92);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .scroll-reveal {
+      opacity: 0;
+    }
+
+    .scroll-reveal.is-visible {
+      animation-fill-mode: both;
+      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .scroll-reveal.is-visible.reveal-fade-up {
+      animation-name: scrollFadeUp;
+    }
+    .scroll-reveal.is-visible.reveal-fade-in {
+      animation-name: scrollFadeIn;
+    }
+    .scroll-reveal.is-visible.reveal-slide-left {
+      animation-name: scrollSlideLeft;
+    }
+    .scroll-reveal.is-visible.reveal-slide-right {
+      animation-name: scrollSlideRight;
+    }
+    .scroll-reveal.is-visible.reveal-scale-up {
+      animation-name: scrollScaleUp;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .scroll-reveal {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <a href="#main-content" class="skip-link">Skip to lesson content</a>
+
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+  <header class="site-nav-header" role="banner">
+    <div class="nav-container container">
+      <a href="#cover" class="nav-logo-group" aria-label="Workbook Home">
+        <div class="nav-logo-glyph" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+        </div>
+        <span class="nav-logo-text">How The Internet Works</span>
+      </a>
+
+      <nav id="siteNav" class="nav-tabs" role="navigation" aria-label="Lesson Sections">
+        <a href="#cover" class="nav-anchor active">Cover</a>
+        <a href="#big-idea" class="nav-anchor">Learn</a>
+        <a href="#journey" class="nav-anchor">Explore</a>
+        <a href="#code-demo" class="nav-anchor">Try Code</a>
+        <a href="#activity" class="nav-anchor">Activity</a>
+        <a href="#quiz" class="nav-anchor">Quiz</a>
+        <a href="#finish" class="nav-anchor">Finish</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="mobileMenuBtn" class="mobile-nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="siteNav">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="nav-progress-track" aria-hidden="true">
+        <div id="topProgressBar" class="nav-progress-fill"></div>
+      </div>
+    </div>
+  </header>
+
+  <div id="srLiveAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <main id="main-content">
+
+    <section id="cover" class="lesson-section container" aria-labelledby="hero-title-text">
+      <div class="hero-layout">
+        <div class="hero-text-col">
+          <span class="hero-kicker">Interactive Tech Workbook</span>
+
+          <h1 id="hero-title-text" class="hero-title" style="color: #000000;">
+            How Does the Internet Work?
+          </h1>
+
+          <p class="hero-tagline">
+            From your phone to a web server — what really happens?
+          </p>
+
+          <p class="hero-lead">
+            Ever wondered what happens in the split second between tapping a link on your phone and watching a video start playing? It is basically a fast game of digital catch between two computers over fiber-optic cables. Let's see how it works.
+          </p>
+
+          <div class="hero-action-row">
+            <a href="#big-idea" class="edu-btn edu-btn-primary" id="startLearningBtn">
+              Start Learning
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+            <a href="#journey" class="edu-btn edu-btn-secondary">
+              Jump to Journey Map
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-schematic-card" aria-label="Interactive Schematic of Network Request">
+          <div class="schematic-header">
+            <span class="schematic-caption">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              Live Request Schematic
+            </span>
+            <button id="sendPingBtn" class="edu-btn edu-btn-secondary schematic-ping-btn" aria-label="Send a simulated network ping">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              Send Test Ping
+            </button>
+          </div>
+
+          <div class="schematic-canvas-wrap">
+
+            <div id="schematicDevice" class="schematic-node">
+              <div class="node-box" title="Your Phone / Client">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                  <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+              </div>
+              <span class="node-subtext">Your Phone</span>
+            </div>
+
+            <div class="schematic-wire">
+              <div class="schematic-cloud-hub" title="The Global Internet Highway">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+                Internet
+              </div>
+
+              <div id="travelingPacket" class="flying-packet" aria-hidden="true">
+                GET
+              </div>
+            </div>
+
+            <div id="schematicServer" class="schematic-node">
+              <div class="node-box" title="Destination Web Server">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                  <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                  <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                  <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                </svg>
+              </div>
+              <span class="node-subtext">Web Server</span>
+            </div>
+          </div>
+
+          <div class="schematic-telemetry">
+            <div class="telemetry-status">
+              <span id="telemetryStatusText">Ready to send request</span>
+            </div>
+            <span id="telemetryPingText">Ping: 0ms</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="big-idea" class="lesson-section container" aria-labelledby="big-idea-title">
+      <div class="section-intro-block">
+        <span class="section-step-indicator">Concept 01</span>
+        <h2 id="big-idea-title" class="section-heading">The Big Idea: 4 Core Parts</h2>
+        <p class="section-description">
+          Before diving into cables and code, here is the whole concept in two simple sentences:
+        </p>
+      </div>
+
+      <div class="callout-summary">
+        <h3>The Client-Server Cycle</h3>
+        <p>
+          <strong>"When you open a website, your device sends a request through the internet to a computer called a server. The server sends the website information back to your device."</strong>
+        </p>
+      </div>
+
+      <div class="big-idea-grid">
+
+        <article class="concept-card" tabindex="0">
+          <div class="concept-header-row">
+            <div class="concept-glyph" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+            </div>
+            <h4>1. Your Device</h4>
+          </div>
+          <div class="concept-photo-box">
+
+          </div>
+          <p>
+            Your phone, laptop, or game console. In computer terms, this is called the <strong>Client</strong> because it starts the conversation by asking for what you want to see.
+          </p>
+          <div class="concept-analogy-box">
+            <strong>Analogy:</strong> You standing at a smoothie counter placing an order.
+          </div>
+        </article>
+
+        <article class="concept-card" tabindex="0">
+          <div class="concept-header-row">
+            <div class="concept-glyph" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+            </div>
+            <h4>2. The Internet</h4>
+          </div>
+          <div class="concept-photo-box">
+
+          </div>
+          <p>
+            The global network of Wi-Fi routers, underground cables, and undersea fiber lines that physically connect all computers together.
+          </p>
+          <div class="concept-analogy-box">
+            <strong>Analogy:</strong> The delivery roads and highways moving packages across town.
+          </div>
+        </article>
+
+        <article class="concept-card" tabindex="0">
+          <div class="concept-header-row">
+            <div class="concept-glyph" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+              </svg>
+            </div>
+            <h4>3. The Server</h4>
+          </div>
+          <div class="concept-photo-box">
+
+          </div>
+          <p>
+            A powerful computer in a secure data center that stays on 24/7. It holds the actual website code, images, and video files.
+          </p>
+          <div class="concept-analogy-box">
+            <strong>Analogy:</strong> The kitchen and chef storing ingredients and making your order.
+          </div>
+        </article>
+
+        <article class="concept-card" tabindex="0">
+          <div class="concept-header-row">
+            <div class="concept-glyph" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+            </div>
+            <h4>4. The Website</h4>
+          </div>
+          <div class="concept-photo-box">
+
+          </div>
+          <p>
+            The package of files (HTML for structure, CSS for design, JavaScript for logic) your browser quickly draws onto your glass screen.
+          </p>
+          <div class="concept-analogy-box">
+            <strong>Analogy:</strong> The fresh smoothie handed back to you at the counter!
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="journey" class="lesson-section container" aria-labelledby="journey-title">
+      <div class="section-intro-block">
+        <span class="section-step-indicator">Concept 02</span>
+        <h2 id="journey-title" class="section-heading">Interactive Internet Journey</h2>
+        <p class="section-description">
+          Follow a single tap through the two-way loop: first the <strong>Outbound Request</strong>, then the <strong>Inbound Response</strong>. Click any step below or use the Next button.
+        </p>
+      </div>
+
+      <div class="journey-module">
+
+        <div class="journey-phase-legend">
+          <span class="phase-tag phase-tag-outbound">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            Phase 1: Request Outbound (Steps 1–3)
+          </span>
+          <span class="phase-tag phase-tag-inbound">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Phase 2: Response Return (Steps 4–6)
+          </span>
+        </div>
+
+        <div class="journey-strip" role="tablist" aria-label="Internet Journey Steps">
+          <button class="journey-step-btn active" role="tab" aria-selected="true" aria-controls="journeyStagePanel" id="jStep-0" data-index="0">
+            <span class="step-badge">1</span>
+            <span class="step-title">Phone</span>
+          </button>
+          <button class="journey-step-btn" role="tab" aria-selected="false" aria-controls="journeyStagePanel" id="jStep-1" data-index="1">
+            <span class="step-badge">2</span>
+            <span class="step-title">Wi-Fi</span>
+          </button>
+          <button class="journey-step-btn" role="tab" aria-selected="false" aria-controls="journeyStagePanel" id="jStep-2" data-index="2">
+            <span class="step-badge">3</span>
+            <span class="step-title">Internet</span>
+          </button>
+          <button class="journey-step-btn" role="tab" aria-selected="false" aria-controls="journeyStagePanel" id="jStep-3" data-index="3">
+            <span class="step-badge">4</span>
+            <span class="step-title">Server</span>
+          </button>
+          <button class="journey-step-btn" role="tab" aria-selected="false" aria-controls="journeyStagePanel" id="jStep-4" data-index="4">
+            <span class="step-badge">5</span>
+            <span class="step-title">Website</span>
+          </button>
+          <button class="journey-step-btn" role="tab" aria-selected="false" aria-controls="journeyStagePanel" id="jStep-5" data-index="5">
+            <span class="step-badge">6</span>
+            <span class="step-title">Screen</span>
+          </button>
+        </div>
+
+        <div id="journeyStagePanel" class="journey-stage-detail" role="tabpanel" aria-labelledby="jStep-0">
+          <div id="journeyIconDisplay" class="stage-icon-holder" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+          </div>
+          <div class="stage-text-wrap">
+            <span id="journeyKicker" class="stage-meta-kicker">Step 1 of 6 • Outbound Request</span>
+            <h3 id="journeyStageHeading" class="stage-heading">You tap a link or type an address</h3>
+            <p id="journeyStageDesc" class="stage-explanation">
+              Your phone browser creates an HTTP request — a small digital message asking: <em>"Hey, may I please view this website?"</em>
+            </p>
+          </div>
+        </div>
+
+        <div class="journey-nav-footer">
+          <button id="journeyPrevBtn" class="edu-btn edu-btn-secondary edu-btn-sm" disabled aria-label="Go to previous step">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Previous
+          </button>
+
+          <span id="journeyCounterLabel" style="font-size: 0.85rem; color: var(--text-faint); font-weight: 600;">
+            Step 1 of 6
+          </span>
+
+          <button id="journeyNextBtn" class="edu-btn edu-btn-primary edu-btn-sm" aria-label="Go to next step">
+            Next Step
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="infrastructure-spotlight">
+        <div class="infrastructure-badge">REAL INTERNET HARDWARE</div>
+        <div class="infrastructure-grid">
+          <div class="infra-card">
+            <div class="infra-img-frame">
+
+            </div>
+            <div class="infra-info">
+              <h4>Undersea & Backbone Fiber Cables</h4>
+              <p>Over 95% of international internet traffic travels through heavy armored cables lying directly on the ocean floor, carrying pulses of laser light between continents!</p>
+            </div>
+          </div>
+          <div class="infra-card">
+            <div class="infra-img-frame">
+
+            </div>
+            <div class="infra-info">
+              <h4>Home Wi-Fi & Ethernet Routers</h4>
+              <p>Your home router receives radio frequency signals from your phone or laptop, converts them into digital packets, and sends them out through telephone or fiber lines.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="real-life" class="lesson-section container" aria-labelledby="example-heading">
+      <div class="section-intro-block">
+        <span class="section-step-indicator">Concept 03</span>
+        <h2 id="example-heading" class="section-heading">Real-Life Example: Opening youtube.com</h2>
+        <p class="section-description">
+          Click through each step below to watch how YouTube loads onto your screen in under one second.
+        </p>
+      </div>
+
+      <div class="youtube-interactive-box">
+
+        <div class="browser-canvas" aria-label="Simulated Browser Screen">
+          <div class="browser-header-bar">
+            <div class="window-dots" aria-hidden="true">
+              <span class="w-dot"></span>
+              <span class="w-dot"></span>
+              <span class="w-dot"></span>
+            </div>
+            <div class="browser-url-input">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span id="ytBrowserUrl">https://www.youtube.com</span>
+            </div>
+          </div>
+
+          <div class="browser-viewport">
+            <div id="ytScreenContainer" class="browser-screen-content">
+
+              <div class="video-mockup-thumb">
+                <div class="video-play-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                </div>
+              </div>
+              <div style="width: 80%; height: 10px; background: var(--bg-surface-raised); border-radius: 4px;"></div>
+              <div style="width: 50%; height: 10px; background: var(--bg-surface-raised); border-radius: 4px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="yt-timeline-list" role="region" aria-label="YouTube Request Steps">
+          <div class="yt-step-item active" tabindex="0" role="button" data-step="1" aria-pressed="true">
+            <span class="yt-num">1</span>
+            <div class="yt-content">
+              <h4>1. You type the website address</h4>
+              <p>You type "youtube.com" into the address bar and press Enter.</p>
+            </div>
+          </div>
+
+          <div class="yt-step-item" tabindex="0" role="button" data-step="2" aria-pressed="false">
+            <span class="yt-num">2</span>
+            <div class="yt-content">
+              <h4>2. Your browser sends a request</h4>
+              <p>Your browser packages a request: <em>"Please send me the YouTube homepage!"</em></p>
+            </div>
+          </div>
+
+          <div class="yt-step-item" tabindex="0" role="button" data-step="3" aria-pressed="false">
+            <span class="yt-num">3</span>
+            <div class="yt-content">
+              <h4>3. The request travels through internet cables</h4>
+              <p>Your request flashes through home Wi-Fi and undersea fiber-optic glass cables.</p>
+            </div>
+          </div>
+
+          <div class="yt-step-item" tabindex="0" role="button" data-step="4" aria-pressed="false">
+            <span class="yt-num">4</span>
+            <div class="yt-content">
+              <h4>4. A server receives the request</h4>
+              <p>A YouTube data center computer catches the message and finds the right video feeds.</p>
+            </div>
+          </div>
+
+          <div class="yt-step-item" tabindex="0" role="button" data-step="5" aria-pressed="false">
+            <span class="yt-num">5</span>
+            <div class="yt-content">
+              <h4>5. The server sends information back</h4>
+              <p>The server wraps up HTML code, thumbnails, and channel titles to send back to you.</p>
+            </div>
+          </div>
+
+          <div class="yt-step-item" tabindex="0" role="button" data-step="6" aria-pressed="false">
+            <span class="yt-num">6</span>
+            <div class="yt-content">
+              <h4>6. Your browser displays the webpage</h4>
+              <p>Your browser paints the video player and thumbnail grid onto your screen!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="code-demo" class="lesson-section container" aria-labelledby="code-title">
+      <div class="section-intro-block">
+        <span class="section-step-indicator">Concept 04</span>
+        <h2 id="code-title" class="section-heading">Worked Code Example</h2>
+        <p class="section-description">
+          Here is how software engineers tell a computer to log an outgoing request using simple JavaScript.
+        </p>
+      </div>
+
+      <div class="code-demo-grid">
+
+        <div class="code-window">
+          <div class="code-window-bar">
+            <span>requestLogger.js</span>
+            <span>JavaScript</span>
+          </div>
+
+          <div class="code-editor-area">
+            <div><span class="tok-kw">const</span> <span class="tok-var">website</span> = <select id="websiteSelect" class="code-site-select" aria-label="Select target website variable"><option value="example.com">"example.com"</option><option value="youtube.com">"youtube.com"</option><option value="wikipedia.org">"wikipedia.org"</option></select>;</div>
+            <div><span class="tok-var">console</span>.<span class="tok-fn">log</span>(<span class="tok-str">"Requesting "</span> + <span class="tok-var">website</span>);</div>
+          </div>
+
+          <div class="code-line-explanations">
+            <div><strong>Line 1:</strong> We create a labeled variable box named <code>website</code> to hold the address we want to contact.</div>
+            <div><strong>Line 2:</strong> We tell the browser to print an informative status note to the developer console.</div>
+          </div>
+
+          <div class="code-action-strip">
+            <button id="runCodeBtn" class="edu-btn edu-btn-primary edu-btn-sm" aria-label="Run the code and see console output">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              Run Code
+            </button>
+            <button id="clearCodeBtn" class="edu-btn edu-btn-secondary edu-btn-sm" aria-label="Clear console output">
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="console-window" aria-label="Simulated Developer Console">
+          <div class="code-window-bar">
+            <span>Developer Console</span>
+            <span style="color: #34d399;">● Ready</span>
+          </div>
+
+          <div id="consoleLogs" class="console-logs-area" role="log" aria-live="polite">
+            <div style="font-style: italic; color: var(--text-faint);">
+              // Press "Run Code" to inspect the output...
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="activity" class="lesson-section container" aria-labelledby="activity-title">
+      <div class="section-intro-block">
+        <span class="section-step-indicator">Concept 05</span>
+        <h2 id="activity-title" class="section-heading">Put the Internet Journey in Order</h2>
+        <p class="section-description">
+          Can you arrange the 5 steps into the correct sequence from start to finish?
+        </p>
+      </div>
+
+      <div class="activity-wrapper">
+        <p class="activity-instructions-text">
+          Use the <strong>▲ Up</strong> and <strong>▼ Down</strong> buttons on each card (or drag them with your mouse) to place the steps in order, then click <strong>Check Order</strong>.
+        </p>
+
+        <div id="activityAlert" class="activity-alert" role="alert">
+          <span id="activityAlertIcon" aria-hidden="true"></span>
+          <span id="activityAlertMsg"></span>
+        </div>
+
+        <ul id="activityList" class="sortable-cards-list" aria-label="Interactive ordering cards">
+
+        </ul>
+
+        <div class="activity-button-bar">
+          <button id="checkActivityBtn" class="edu-btn edu-btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Check Order
+          </button>
+          <button id="resetActivityBtn" class="edu-btn edu-btn-secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+            Shuffle & Reset
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz" class="lesson-section container" aria-labelledby="quiz-title">
+      <div class="section-intro-block">
+        <span class="section-step-indicator">Concept 06</span>
+        <h2 id="quiz-title" class="section-heading">Knowledge Check: Test Your Skills</h2>
+        <p class="section-description">
+          Test what you've learned! Answer these 5 multiple-choice questions one at a time.
+        </p>
+      </div>
+
+      <div class="quiz-frame" role="region" aria-label="Knowledge Quiz">
+        <div class="quiz-status-row">
+          <span id="quizStepCount">Question 1 of 5</span>
+          <span id="quizScoreCount">Score: 0 / 5</span>
+        </div>
+
+        <h3 id="quizQuestionText" class="quiz-question-prompt">
+          Loading question...
+        </h3>
+
+        <div id="quizChoicesWrap" class="quiz-choices-stack" role="radiogroup" aria-labelledby="quizQuestionText">
+
+        </div>
+
+        <div id="quizFeedbackBox" class="quiz-feedback-banner" role="alert">
+
+        </div>
+
+        <div class="quiz-footer-actions">
+          <button id="quizNextBtn" class="edu-btn edu-btn-primary" disabled>
+            Next Question
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="finish" class="lesson-section container" aria-labelledby="finish-title">
+      <div class="completion-card">
+        <div class="completion-celebration-glyph" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+            <path d="M4 22h16"></path>
+            <path d="M10 14.66V17c0 .55-.45 1-1 1H7.5"></path>
+            <path d="M14 14.66V17c0 .55.45 1 1 1h1.5"></path>
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+          </svg>
+        </div>
+
+        <h2 id="finish-title" class="completion-title">
+          You completed the lesson!
+        </h2>
+
+        <p id="finishCustomMsg" class="completion-text">
+          You now understand how the digital world connects! Every tap, search, and message follows this exact request-and-response cycle.
+        </p>
+
+        <div class="results-metrics-strip">
+          <div class="metric-panel">
+            <div id="finalQuizMetric" class="metric-fig">0 / 5</div>
+            <div class="metric-tag">Quiz Score</div>
+          </div>
+          <div class="metric-panel">
+            <div id="finalActivityMetric" class="metric-fig">In Progress</div>
+            <div class="metric-tag">Activity Status</div>
+          </div>
+          <div class="metric-panel">
+            <div id="finalRankMetric" class="metric-fig">Explorer</div>
+            <div class="metric-tag">Rank Badge</div>
+          </div>
+        </div>
+
+        <div class="key-recap-box">
+          <h4>What You Now Understand:</h4>
+          <ul class="recap-points">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>Client-Server Dialogue:</strong> Your device asks (Request), the server delivers (Response).</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>Physical Infrastructure:</strong> Data turns into radio waves and light flashes moving through glass cables.</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>Browser Rendering:</strong> Incoming code packages are rapidly assembled into the visual websites you interact with.</span>
+            </li>
+          </ul>
+        </div>
+
+        <button id="restartBtn" class="edu-btn edu-btn-primary" aria-label="Restart the lesson from the beginning">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          Restart Lesson
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner container">
+      <div>
+        <strong>How Does the Internet Work?</strong> • Interactive Frontend Developer Assessment
+      </div>
+      <div>
+        Built with semantic HTML, vanilla CSS, and JavaScript. 100% offline.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    'use strict';
+
+    try {
+      localStorage.removeItem('wb_theme');
+      sessionStorage.removeItem('wb_theme');
+    } catch (e) {}
+    document.documentElement.removeAttribute('data-theme');
+
+    const state = {
+      journeyIndex: 0,
+
+      activityItems: [
+        { id: 'app', text: 'Website appears on screen', correctOrder: 4 },
+        { id: 'addr', text: 'You enter a website address', correctOrder: 0 },
+        { id: 'req', text: 'Browser sends an HTTP request', correctOrder: 1 },
+        { id: 'recv', text: 'Server receives and opens request', correctOrder: 2 },
+        { id: 'back', text: 'Server sends data packets back', correctOrder: 3 }
+      ],
+      activityDone: false,
+
+      quizIndex: 0,
+      quizScore: 0,
+      quizQuestions: [
+        {
+          question: "What is a server?",
+          options: [
+            "A computer that stores website files and sends them when requested",
+            "A physical wire connecting your phone directly to the ocean",
+            "A battery that powers your Wi-Fi router at night",
+            "The keyboard button you press to go online"
+          ],
+          correct: 0,
+          explanation: "A server is a reliable computer running 24/7 in a data center, storing website files and serving them whenever someone requests them."
+        },
+        {
+          question: "What does a browser do?",
+          options: [
+            "It replaces your computer monitor with a camera",
+            "It turns website code and files into the visual page you see and interact with",
+            "It stores all websites in the world directly inside your phone's memory",
+            "It physically repairs broken Wi-Fi cables underground"
+          ],
+          correct: 1,
+          explanation: "Web browsers like Chrome, Safari, or Firefox receive raw code (HTML, CSS, JavaScript) from servers and translate it into interactive graphics."
+        },
+        {
+          question: "What happens when you open a website?",
+          options: [
+            "Your device sends a request through the internet to a server, which sends the page back",
+            "Your device takes a screenshot of another random person's computer screen",
+            "A physical CD is delivered through your phone's charging port",
+            "The server shuts down forever to save electricity"
+          ],
+          correct: 0,
+          explanation: "That's the fundamental request-response cycle: your device asks for the page, and the server returns the files."
+        },
+        {
+          question: "What is the internet?",
+          options: [
+            "A single supercomputer located in California",
+            "A worldwide network of connected computers and cables sharing information",
+            "An app you can only download from the App Store",
+            "A magic satellite that only works on sunny days"
+          ],
+          correct: 1,
+          explanation: "The internet is not a single company or machine. It is the global network of connected computers, cables, and routers that talk to each other."
+        },
+        {
+          question: "Where does website information come from?",
+          options: [
+            "It is permanently pre-installed on your phone before you buy it",
+            "From servers located in data centers that store the website's files",
+            "It is generated out of thin air by Wi-Fi antennas",
+            "From your device's flashlight sensor"
+          ],
+          correct: 1,
+          explanation: "Website files live on specialized web servers located in secure, climate-controlled data centers worldwide."
+        }
+      ]
+    };
+
+    function announce(msg) {
+      const el = document.getElementById('srLiveAnnouncer');
+      if (el) el.textContent = msg;
+    }
+
+    function initNavigation() {
+      const mobileBtn = document.getElementById('mobileMenuBtn');
+      const navTabs = document.getElementById('siteNav');
+      const links = document.querySelectorAll('.nav-anchor');
+      const prog = document.getElementById('topProgressBar');
+
+      mobileBtn.addEventListener('click', () => {
+        const isOpen = navTabs.classList.toggle('open');
+        mobileBtn.setAttribute('aria-expanded', isOpen);
+      });
+
+      links.forEach(a => {
+        a.addEventListener('click', () => {
+          navTabs.classList.remove('open');
+          mobileBtn.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!navTabs.contains(e.target) && !mobileBtn.contains(e.target)) {
+          navTabs.classList.remove('open');
+          mobileBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navTabs.classList.contains('open')) {
+          navTabs.classList.remove('open');
+          mobileBtn.setAttribute('aria-expanded', 'false');
+          mobileBtn.focus();
+        }
+      });
+
+      window.addEventListener('scroll', () => {
+        const top = window.scrollY;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = max > 0 ? (top / max) * 100 : 0;
+        if (prog) prog.style.width = `${Math.min(100, Math.max(0, pct))}%`;
+
+        const sections = document.querySelectorAll('section[id]');
+        let currentId = '';
+        sections.forEach(s => {
+          if (top >= s.offsetTop - 100) currentId = s.id;
+        });
+
+        if (currentId) {
+          links.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === `#${currentId}`);
+          });
+        }
+      }, { passive: true });
+    }
+
+    function initHeroSchematic() {
+      const pingBtn = document.getElementById('sendPingBtn');
+      const packet = document.getElementById('travelingPacket');
+      const devNode = document.getElementById('schematicDevice');
+      const srvNode = document.getElementById('schematicServer');
+      const statusText = document.getElementById('telemetryStatusText');
+      const pingText = document.getElementById('telemetryPingText');
+      let isAnimating = false;
+
+      pingBtn.addEventListener('click', () => {
+        if (isAnimating) return;
+        isAnimating = true;
+        pingBtn.disabled = true;
+
+        packet.textContent = "GET";
+        packet.style.backgroundColor = "var(--brand-blue)";
+        packet.style.left = "0%";
+        devNode.querySelector('.node-box').classList.add('active-pulse');
+        statusText.textContent = "Sending HTTP GET request...";
+        pingText.textContent = "Ping: calculating...";
+
+        setTimeout(() => {
+          packet.style.left = "calc(100% - 22px)";
+        }, 50);
+
+        setTimeout(() => {
+          devNode.querySelector('.node-box').classList.remove('active-pulse');
+          srvNode.querySelector('.node-box').classList.add('active-pulse');
+          statusText.textContent = "Server received request. Sending 200 OK...";
+          packet.textContent = "200";
+          packet.style.backgroundColor = "var(--brand-blue)";
+        }, 850);
+
+        setTimeout(() => {
+          packet.style.left = "0%";
+        }, 1050);
+
+        setTimeout(() => {
+          srvNode.querySelector('.node-box').classList.remove('active-pulse');
+          devNode.querySelector('.node-box').classList.add('active-pulse');
+          statusText.textContent = "Response delivered! Webpage rendered.";
+          pingText.textContent = "Round-trip: 42ms";
+        }, 1900);
+
+        setTimeout(() => {
+          devNode.querySelector('.node-box').classList.remove('active-pulse');
+          pingBtn.disabled = false;
+          isAnimating = false;
+          announce("Test ping completed in 42 milliseconds with HTTP 200 response.");
+        }, 2200);
+      });
+    }
+
+    const journeyData = [
+      {
+        kicker: "Step 1 of 6 • Outbound Request",
+        heading: "You tap a link or type an address",
+        desc: "Your phone's web browser packages your action into a digital envelope called an 'HTTP Request'. It asks for the specific page you want to see.",
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>'
+      },
+      {
+        kicker: "Step 2 of 6 • Outbound Request",
+        heading: "Radio waves hit your Wi-Fi router",
+        desc: "Your device shoots radio waves through the air. Your Wi-Fi router catches them and turns them into electrical pulses or flashes of light through fiber lines.",
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>'
+      },
+      {
+        kicker: "Step 3 of 6 • Outbound Request",
+        heading: "Your request zips through the global internet",
+        desc: "Underground and undersea fiber-optic cables flash the data across cities and beneath oceans at nearly the speed of light to reach the destination data center.",
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>'
+      },
+      {
+        kicker: "Step 4 of 6 • Inbound Response",
+        heading: "The server receives and opens the request",
+        desc: "The website's server computer opens the digital envelope, verifies what you requested, and locates the right files in its high-speed storage.",
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>'
+      },
+      {
+        kicker: "Step 5 of 6 • Inbound Response",
+        heading: "The server sends the website files back",
+        desc: "The server creates an HTTP Response package with the HTML, styling, and images. It sends this data back across the internet to your house in tiny packets.",
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>'
+      },
+      {
+        kicker: "Step 6 of 6 • Inbound Response",
+        heading: "Your browser paints the website on your screen",
+        desc: "Your phone receives the incoming files, pieces the layout together, and paints the interactive page onto your screen ready for you to use!",
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>'
+      }
+    ];
+
+    function initJourney() {
+      const stepBtns = document.querySelectorAll('.journey-step-btn');
+      const kicker = document.getElementById('journeyKicker');
+      const heading = document.getElementById('journeyStageHeading');
+      const desc = document.getElementById('journeyStageDesc');
+      const iconWrap = document.getElementById('journeyIconDisplay');
+      const prevBtn = document.getElementById('journeyPrevBtn');
+      const nextBtn = document.getElementById('journeyNextBtn');
+      const counterLabel = document.getElementById('journeyCounterLabel');
+
+      function updateUI(idx) {
+        state.journeyIndex = idx;
+        const cur = journeyData[idx];
+
+        stepBtns.forEach((b, i) => {
+          b.classList.toggle('active', i === idx);
+          b.setAttribute('aria-selected', i === idx);
+        });
+
+        kicker.textContent = cur.kicker;
+        heading.textContent = cur.heading;
+        desc.innerHTML = cur.desc;
+        iconWrap.innerHTML = cur.icon;
+        counterLabel.textContent = `Step ${idx + 1} of 6`;
+
+        prevBtn.disabled = idx === 0;
+        nextBtn.disabled = idx === journeyData.length - 1;
+
+        announce(`Journey step ${idx + 1}: ${cur.heading}`);
+      }
+
+      stepBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          updateUI(parseInt(btn.getAttribute('data-index'), 10));
+        });
+      });
+
+      prevBtn.addEventListener('click', () => {
+        if (state.journeyIndex > 0) updateUI(state.journeyIndex - 1);
+      });
+
+      nextBtn.addEventListener('click', () => {
+        if (state.journeyIndex < journeyData.length - 1) updateUI(state.journeyIndex + 1);
+      });
+
+      updateUI(0);
+    }
+
+    function initYouTubeWalkthrough() {
+      const steps = document.querySelectorAll('.yt-step-item');
+      const screenContainer = document.getElementById('ytScreenContainer');
+      const urlText = document.getElementById('ytBrowserUrl');
+
+      const mockScreens = {
+        1: {
+          url: "youtube.com|",
+          html: `<div style="color: var(--text-muted); font-size: 0.9rem; padding: 20px;">Address bar typing:<br><strong style="color: var(--text-main); font-size: 1.1rem; font-family: var(--font-code);">youtube.com [Enter]</strong></div>`
+        },
+        2: {
+          url: "https://www.youtube.com",
+          html: `<div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 28px; height: 28px; border: 3px solid var(--border-subtle); border-top-color: var(--brand-blue); border-radius: 50%; animation: spin 0.8s linear infinite;"></div><span style="font-size: 0.85rem; color: var(--text-muted);">Browser packaging GET request...</span></div>`
+        },
+        3: {
+          url: "https://www.youtube.com",
+          html: `<div style="text-align: center; color: var(--text-muted); font-size: 0.88rem;"><div style="font-family: var(--font-code); color: var(--brand-blue); font-size: 1.2rem; margin-bottom: 6px;">~300,000 km/s</div>Routing through fiber optic cables to nearest data center...</div>`
+        },
+        4: {
+          url: "https://www.youtube.com",
+          html: `<div style="text-align: center; color: var(--text-muted); font-size: 0.88rem;"><div style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Server Response</div>YouTube Server matched feed: <strong>12 videos queued</strong></div>`
+        },
+        5: {
+          url: "https://www.youtube.com",
+          html: `<div style="display: flex; flex-direction: column; align-items: center; gap: 6px;"><div style="font-size: 0.85rem; color: var(--brand-blue); font-weight: 600;">Streaming data chunks: 200 OK</div><div style="width: 140px; height: 6px; background: var(--bg-surface-raised); border-radius: 4px; overflow: hidden;"><div style="width: 75%; height: 100%; background: var(--brand-blue);"></div></div></div>`
+        },
+        6: {
+          url: "https://www.youtube.com",
+          html: `<div style="font-size: 1.4rem; text-align:center;">📺 YouTube video ready! 🎉</div>`,
+        }
+      };
+
+      steps.forEach(step => {
+        const select = () => {
+          steps.forEach(s => {
+            s.classList.remove('active');
+            s.setAttribute('aria-pressed', 'false');
+          });
+          step.classList.add('active');
+          step.setAttribute('aria-pressed', 'true');
+
+          const num = step.getAttribute('data-step');
+          const mock = mockScreens[num];
+          if (mock) {
+            urlText.textContent = mock.url;
+            screenContainer.innerHTML = mock.html;
+          }
+          announce(`Step ${num} selected in YouTube walkthrough`);
+        };
+
+        step.addEventListener('click', select);
+        step.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            select();
+          }
+        });
+      });
+    }
+
+    function initCodeSandbox() {
+      const runBtn = document.getElementById('runCodeBtn');
+      const clearBtn = document.getElementById('clearCodeBtn');
+      const logs = document.getElementById('consoleLogs');
+      const select = document.getElementById('websiteSelect');
+
+      runBtn.addEventListener('click', () => {
+        const site = select.value;
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+        const row = document.createElement('div');
+        row.className = 'console-output-row';
+        row.innerHTML = `
+          <span style="color: var(--brand-blue); font-weight: 700;">&gt;</span>
+          <div style="flex: 1; min-width: 0;">
+            <span class="console-output-text">Requesting ${site}</span>
+            <div style="font-size: 0.72rem; color: var(--text-faint); margin-top: 2px;">
+              [Log] ${time} • Handshake completed: 200 OK
+            </div>
+          </div>
+        `;
+        logs.appendChild(row);
+        logs.scrollTop = logs.scrollHeight;
+        announce(`Code output: Requesting ${site}`);
+      });
+
+      clearBtn.addEventListener('click', () => {
+        logs.innerHTML = `
+          <div style="font-style: italic; color: var(--text-faint);">
+          </div>
+        `;
+        announce("Console output cleared");
+      });
+    }
+
+    function initActivity() {
+      const list = document.getElementById('activityList');
+      const checkBtn = document.getElementById('checkActivityBtn');
+      const resetBtn = document.getElementById('resetActivityBtn');
+      const alertBox = document.getElementById('activityAlert');
+      const alertMsg = document.getElementById('activityAlertMsg');
+      const alertIcon = document.getElementById('activityAlertIcon');
+
+      function render() {
+        list.innerHTML = '';
+        state.activityItems.forEach((item, index) => {
+          const li = document.createElement('li');
+          li.className = 'sortable-card-item';
+          li.draggable = true;
+          li.setAttribute('data-index', index);
+
+          li.innerHTML = `
+            <span class="slot-num-badge">${index + 1}</span>
+            <span class="card-label-text">${item.text}</span>
+            <div class="card-reorder-buttons">
+              <button type="button" class="btn-shift move-up" aria-label="Move '${item.text}' up" ${index === 0 ? 'disabled' : ''}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
+              </button>
+              <button type="button" class="btn-shift move-down" aria-label="Move '${item.text}' down" ${index === state.activityItems.length - 1 ? 'disabled' : ''}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+            </div>
+          `;
+
+          li.querySelector('.move-up').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (index > 0) swap(index, index - 1);
+          });
+          li.querySelector('.move-down').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (index < state.activityItems.length - 1) swap(index, index + 1);
+          });
+
+          li.addEventListener('dragstart', handleDragStart);
+          li.addEventListener('dragover', handleDragOver);
+          li.addEventListener('drop', handleDrop);
+          li.addEventListener('dragend', handleDragEnd);
+
+          list.appendChild(li);
+        });
+      }
+
+      function swap(i1, i2) {
+        const tmp = state.activityItems[i1];
+        state.activityItems[i1] = state.activityItems[i2];
+        state.activityItems[i2] = tmp;
+        alertBox.style.display = 'none';
+        render();
+
+        const cards = list.querySelectorAll('.sortable-card-item');
+        if (cards[i2]) {
+          const btn = cards[i2].querySelector('.move-up') || cards[i2];
+          btn.focus();
+        }
+        announce(`Moved item to slot ${i2 + 1}`);
+      }
+
+      let dragEl = null;
+      function handleDragStart(e) {
+        dragEl = this;
+        this.classList.add('is-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', this.getAttribute('data-index'));
+      }
+      function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      }
+      function handleDrop(e) {
+        e.preventDefault();
+        if (dragEl && dragEl !== this) {
+          const from = parseInt(dragEl.getAttribute('data-index'), 10);
+          const to = parseInt(this.getAttribute('data-index'), 10);
+          const item = state.activityItems.splice(from, 1)[0];
+          state.activityItems.splice(to, 0, item);
+          alertBox.style.display = 'none';
+          render();
+        }
+      }
+      function handleDragEnd() {
+        this.classList.remove('is-dragging');
+      }
+
+      checkBtn.addEventListener('click', () => {
+        let allCorrect = true;
+        const domItems = list.querySelectorAll('.sortable-card-item');
+
+        state.activityItems.forEach((item, idx) => {
+          const el = domItems[idx];
+          if (item.correctOrder === idx) {
+            el.classList.remove('wrong-pos');
+            el.classList.add('correct-pos');
+          } else {
+            el.classList.remove('correct-pos');
+            el.classList.add('wrong-pos');
+            allCorrect = false;
+          }
+        });
+
+        if (allCorrect) {
+          state.activityDone = true;
+          alertBox.className = 'activity-alert success';
+          alertBox.style.display = 'flex';
+          alertIcon.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+          alertMsg.textContent = "Excellent! You correctly ordered all 5 steps of the internet journey!";
+          triggerConfetti();
+          updateCompletion();
+          announce("Success! All steps in correct order.");
+        } else {
+          alertBox.className = 'activity-alert error';
+          alertBox.style.display = 'flex';
+          alertIcon.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+          alertMsg.textContent = "A few cards are out of order. Review the red highlighted cards and adjust their position!";
+          announce("Some cards are out of order. Keep trying!");
+        }
+      });
+
+      resetBtn.addEventListener('click', () => {
+        for (let i = state.activityItems.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [state.activityItems[i], state.activityItems[j]] = [state.activityItems[j], state.activityItems[i]];
+        }
+        alertBox.style.display = 'none';
+        render();
+        announce("Activity cards reshuffled");
+      });
+
+      render();
+    }
+
+    function initQuiz() {
+      const qText = document.getElementById('quizQuestionText');
+      const choicesWrap = document.getElementById('quizChoicesWrap');
+      const feedbackBox = document.getElementById('quizFeedbackBox');
+      const nextBtn = document.getElementById('quizNextBtn');
+      const stepCount = document.getElementById('quizStepCount');
+      const scoreCount = document.getElementById('quizScoreCount');
+
+      function renderQuestion(idx) {
+        const q = state.quizQuestions[idx];
+        qText.textContent = `${idx + 1}. ${q.question}`;
+        stepCount.textContent = `Question ${idx + 1} of ${state.quizQuestions.length}`;
+        scoreCount.textContent = `Score: ${state.quizScore} / ${state.quizQuestions.length}`;
+
+        feedbackBox.style.display = 'none';
+        nextBtn.disabled = true;
+
+        if (idx === state.quizQuestions.length - 1) {
+          nextBtn.innerHTML = `Finish Quiz & See Results <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+        } else {
+          nextBtn.innerHTML = `Next Question <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+        }
+
+        choicesWrap.innerHTML = '';
+        const letters = ['A', 'B', 'C', 'D'];
+
+        q.options.forEach((optText, optIdx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'quiz-choice-btn';
+          btn.innerHTML = `
+            <span class="choice-key">${letters[optIdx]}</span>
+            <span class="choice-text">${optText}</span>
+          `;
+          btn.addEventListener('click', () => choose(optIdx, btn));
+          choicesWrap.appendChild(btn);
+        });
+
+        announce(`Question ${idx + 1}: ${q.question}`);
+      }
+
+      function choose(chosenIdx, clickedBtn) {
+        const q = state.quizQuestions[state.quizIndex];
+        const all = choicesWrap.querySelectorAll('.quiz-choice-btn');
+        all.forEach(b => b.disabled = true);
+
+        const isCorrect = chosenIdx === q.correct;
+        if (isCorrect) {
+          state.quizScore++;
+          clickedBtn.classList.add('is-correct');
+          feedbackBox.className = 'quiz-feedback-banner feedback-correct';
+          feedbackBox.innerHTML = `<strong>Correct!</strong> ${q.explanation}`;
+        } else {
+          clickedBtn.classList.add('is-wrong');
+          if (all[q.correct]) all[q.correct].classList.add('is-correct');
+          feedbackBox.className = 'quiz-feedback-banner feedback-wrong';
+          feedbackBox.innerHTML = `<strong>Not quite.</strong> The correct answer was <strong>${all[q.correct].querySelector('.choice-key').textContent}</strong>.<br>${q.explanation}`;
+        }
+
+        scoreCount.textContent = `Score: ${state.quizScore} / ${state.quizQuestions.length}`;
+        nextBtn.disabled = false;
+        nextBtn.focus();
+        announce(isCorrect ? "Correct answer!" : "Incorrect answer. Feedback shown.");
+      }
+
+      nextBtn.addEventListener('click', () => {
+        if (state.quizIndex < state.quizQuestions.length - 1) {
+          state.quizIndex++;
+          renderQuestion(state.quizIndex);
+        } else {
+          updateCompletion();
+          const finish = document.getElementById('finish');
+          if (finish) finish.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+
+      renderQuestion(0);
+    }
+
+    function updateCompletion() {
+      const qMetric = document.getElementById('finalQuizMetric');
+      const aMetric = document.getElementById('finalActivityMetric');
+      const rMetric = document.getElementById('finalRankMetric');
+      const msg = document.getElementById('finishCustomMsg');
+
+      const s = state.quizScore;
+      const total = state.quizQuestions.length;
+      qMetric.textContent = `${s} / ${total}`;
+      aMetric.textContent = state.activityDone ? "Completed" : "In Progress";
+
+      if (s === 5) {
+        rMetric.textContent = "Internet Pro!";
+        msg.textContent = "Phenomenal job! You scored a perfect 5/5. You have a crystal-clear understanding of how devices, servers, and networks communicate!";
+      } else if (s >= 3) {
+        rMetric.textContent = "Great job!";
+        msg.textContent = "Outstanding work! You scored " + s + "/5 and understand the core fundamentals of the client-server loop.";
+      } else {
+        rMetric.textContent = "Keep exploring!";
+        msg.textContent = "Nice effort! You scored " + s + "/5. Take another look at the journey map and give the quiz another shot!";
+      }
+    }
+
+    function initRestart() {
+      document.getElementById('restartBtn').addEventListener('click', () => {
+        state.journeyIndex = 0;
+        state.activityDone = false;
+        state.quizIndex = 0;
+        state.quizScore = 0;
+
+        initJourney();
+        initActivity();
+        initQuiz();
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        announce("Lesson restarted from the beginning");
+      });
+    }
+
+    function triggerConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#4b5563', '#6b7280', '#10b981', '#f59e0b', '#f43f5e'];
+
+      for (let i = 0; i < 50; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 12,
+          vy: (Math.random() - 0.7) * 12,
+          size: Math.random() * 6 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 8,
+          opacity: 1
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let active = 0;
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.28;
+          p.rotation += p.vRot;
+          p.opacity -= 0.016;
+
+          if (p.opacity > 0) {
+            active++;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = Math.max(0, p.opacity);
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+            ctx.restore();
+          }
+        });
+
+        if (active > 0) requestAnimationFrame(draw);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      draw();
+    }
+
+    function initScrollReveal() {
+      const revealMap = [
+        { selector: '.section-intro-block', animation: 'reveal-fade-up', duration: '0.7s' },
+        { selector: '.hero-text-col', animation: 'reveal-slide-left', duration: '0.8s' },
+        { selector: '.schematic-panel', animation: 'reveal-slide-right', duration: '0.8s' },
+        { selector: '.callout-summary', animation: 'reveal-fade-up', duration: '0.6s' },
+        { selector: '.concept-card', animation: 'reveal-scale-up', duration: '0.55s', stagger: 120 },
+        { selector: '.infrastructure-spotlight', animation: 'reveal-fade-up', duration: '0.7s' },
+        { selector: '.infra-card', animation: 'reveal-scale-up', duration: '0.5s', stagger: 150 },
+        { selector: '.journey-module', animation: 'reveal-fade-up', duration: '0.7s' },
+        { selector: '.youtube-interactive-box', animation: 'reveal-fade-up', duration: '0.7s' },
+        { selector: '.code-window', animation: 'reveal-slide-left', duration: '0.7s' },
+        { selector: '.console-window', animation: 'reveal-slide-right', duration: '0.7s' },
+        { selector: '.activity-wrapper', animation: 'reveal-scale-up', duration: '0.65s' },
+        { selector: '.quiz-wrapper', animation: 'reveal-scale-up', duration: '0.65s' },
+        { selector: '.key-recap-box', animation: 'reveal-fade-up', duration: '0.6s' },
+        { selector: '.concept-photo-box', animation: 'reveal-fade-in', duration: '0.5s', stagger: 100 },
+        { selector: '.yt-timeline-item', animation: 'reveal-fade-up', duration: '0.45s', stagger: 80 },
+      ];
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.12,
+        rootMargin: '0px 0px -40px 0px'
+      });
+
+      revealMap.forEach(({ selector, animation, duration, stagger }) => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach((el, index) => {
+          el.classList.add('scroll-reveal', animation);
+          el.style.animationDuration = duration;
+          if (stagger) {
+            el.style.animationDelay = `${index * stagger}ms`;
+          }
+          observer.observe(el);
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initNavigation();
+      initHeroSchematic();
+      initJourney();
+      initYouTubeWalkthrough();
+      initCodeSandbox();
+      initActivity();
+      initQuiz();
+      initRestart();
+      initScrollReveal();
+    });
+  </script>
+</body>
+</html>
